@@ -30,10 +30,10 @@ const AccountSchema = new mongoose.Schema({
     match: /^[A-Za-z0-9_\-.]{1,16}$/,
   },
   display: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    type: String,
+    required: true,
+    trim: true,
+  },
   password: {
     type: String,
     required: true,
