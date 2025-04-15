@@ -9,13 +9,29 @@ const handleDomo = (e, onDomoAdded) => {
 
     const name = e.target.querySelector("#domoName").value;
     const age = e.target.querySelector("#domoAge").value;
+    const coolPoints = e.target.querySelector("#domoCool").value
 
-    if(!name || !age) {
+    if(!name || !age || !coolPoints) {
         helper.handleError("All fields are required");
         return false;
     }
 
-    helper.sendPost(e.target.action, {name, age}, onDomoAdded);
+    helper.sendPost(e.target.action, {name, age, coolPoints}, onDomoAdded);
+    return false;
+}
+
+const handleDelete = (e, onDomoDeleted) => {
+    e.preventDefault();
+    helper.hideError();
+
+    const name = e.target.querySelector("#domoDeleteName").value;
+
+    if (!name) {
+        helper.handleError("Name is required");
+        return false;
+    }
+
+    helper.sendPost(e.target.action, {name}, onDomoDeleted);
     return false;
 }
 
@@ -32,9 +48,28 @@ const DomoForm = (props) => {
             <input id="domoName" type="text" name="name" placeholder="Domo Name" />
             <label htmlFor="age">Age: </label>
             <input id="domoAge" type="number" min="0" name="age" />
+            <label htmlFor="cool">Cool Points: </label>
+            <input id="domoCool" type="number" min="0" name="cool" />
+            
             <input className="makeDomoSubmit" type="submit" value="Make Domo" />
         </form>
     )
+}
+
+const DomoDeleteForm = (props) => {
+    return (
+        <form id="domoDeleteForm"
+            onSubmit={(e) => handleDelete(e, props.triggerReload)}
+            name="domoDeleteForm"
+            action="/deleteDomos"
+            method="POST"
+            className="domoDeleteForm"
+        >
+            <label htmlFor="name">Name: </label>
+            <input id="domoDeleteName" type="text" name="name" placeholder="Domo Name" />
+            <input className="deleteDomoSubmit" type="submit" value="Delete Domo" />
+        </form>
+    );
 }
 
 const DomoList = (props) => {
@@ -49,7 +84,6 @@ const DomoList = (props) => {
         loadDomosFromServer();
     }, [props.reloadDomos]);
 
-    console.log(domos);
 
     if (domos.length === 0 ) {
         return (
@@ -65,6 +99,7 @@ const DomoList = (props) => {
                 <img src="/assets/img/domoface.jpeg" alt="domo face" className="domoFace" />
                 <h3 className="domoName">Name: {domo.name}</h3>
                 <h3 className="domoAge">Age: {domo.age}</h3>
+                <h3 className="domoCool">Cool Points: {domo.coolPoints}</h3>
             </div>
         )
     });
@@ -83,6 +118,9 @@ const App = () => {
         <div>
             <div id="makeDomo">
                 <DomoForm triggerReload={() => setReloadDomos(!reloadDomos)} />
+            </div>
+            <div id="deleteDomo">
+                <DomoDeleteForm triggerReload={()=>setReloadDomos(!reloadDomos)}/>
             </div>
             <div id="domos">
                 <DomoList domos={[]} reloadDomos={reloadDomos} />
